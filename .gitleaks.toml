@@ -1,0 +1,27 @@
+title = "stock-picker gitleaks configuration"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "discord-webhook-url"
+description = "Discord webhook URL"
+regex = '''https://discord(?:app)?\.com/api/webhooks/[0-9]{17,20}/[A-Za-z0-9._-]{60,}'''
+keywords = ["discord", "webhooks"]
+tags = ["webhook", "discord"]
+
+[[rules]]
+id = "env-assigned-secret"
+description = "Likely secret assigned in an env-style file"
+regex = '''(?i)(?:api[_-]?key|secret|token|password|webhook[_-]?url|session[_-]?secret|csrf[_-]?secret)\s*=\s*['"]?[A-Za-z0-9_./+=:@%~-]{16,}['"]?'''
+keywords = ["api_key", "apikey", "secret", "token", "password", "webhook"]
+tags = ["env", "secret"]
+
+[[allowlists]]
+description = "Placeholder values and example domains are safe to commit"
+regexes = [
+  '''<[^>\n]+>''',
+  '''example\.com''',
+  '''localhost''',
+  '''127\.0\.0\.1''',
+]

@@ -149,6 +149,8 @@ activemq-data/
 
 # Environments
 .env
+.env.*
+*.env
 .envrc
 .venv
 env/
@@ -203,11 +205,54 @@ cython_debug/
 # Temporary file for partial code execution
 tempCodeRunnerFile.py
 
+# macOS
+.DS_Store
+
 # Ruff stuff:
 .ruff_cache/
 
+# Node / frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
 # PyPI configuration file
 .pypirc
+
+# Sensitive local files
+*.key
+*.pem
+*.p8
+*.p12
+*.pfx
+*.crt
+*.csr
+*.jks
+*.keystore
+*.kdbx
+.aws/
+.ssh/
+.netrc
+.npmrc
+.yarnrc.yml
+*credential*
+*credentials*
+*secret*
+*secrets*
+id_rsa*
+id_ed25519*
+
+# Local app state that may contain portfolio or provider data
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.dump
+*.backup
+data/
+local-data/
+storage/
 
 # Marimo
 marimo/_static/
