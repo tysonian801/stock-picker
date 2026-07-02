@@ -1,0 +1,42 @@
+[project]
+name = "stock-picker-backend"
+version = "0.1.0"
+description = "Phase 1 paper-trading stock research backend"
+requires-python = ">=3.12"
+dependencies = [
+  "alembic>=1.13.3",
+  "celery[redis]>=5.4.0",
+  "fastapi>=0.115.0",
+  "httpx>=0.27.0",
+  "psycopg[binary]>=3.2.0",
+  "pydantic-settings>=2.5.0",
+  "python-multipart>=0.0.9",
+  "sqlalchemy>=2.0.35",
+  "uvicorn[standard]>=0.30.6",
+]
+
+[build-system]
+requires = ["setuptools>=75.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.0",
+  "ruff>=0.6.9",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "S"]
+ignore = ["B008", "S101", "S105", "S106"]

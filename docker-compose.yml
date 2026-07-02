@@ -1,0 +1,73 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: stock_picker
+      POSTGRES_USER: stock_picker
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-stock_picker_dev_password}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:8000}
+      FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:-http://localhost:5173}
+      ALLOW_DEMO_DATA: ${ALLOW_DEMO_DATA:-true}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD in your local environment}
+      SESSION_SECRET_KEY: ${SESSION_SECRET_KEY:?set SESSION_SECRET_KEY in your local environment}
+      CSRF_SECRET_KEY: ${CSRF_SECRET_KEY:?set CSRF_SECRET_KEY in your local environment}
+      DATABASE_URL: postgresql+psycopg://stock_picker:${POSTGRES_PASSWORD:-stock_picker_dev_password}@postgres:5432/stock_picker
+      REDIS_URL: redis://redis:6379/0
+      FMP_API_KEY: ${FMP_API_KEY:-}
+      ALPHA_VANTAGE_API_KEY: ${ALPHA_VANTAGE_API_KEY:-}
+      FINNHUB_API_KEY: ${FINNHUB_API_KEY:-}
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "8000:8000"
+
+  worker:
+    build:
+      context: ./backend
+    command: celery -A app.tasks worker --beat --loglevel=INFO
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      ALLOW_DEMO_DATA: ${ALLOW_DEMO_DATA:-true}
+      DATABASE_URL: postgresql+psycopg://stock_picker:${POSTGRES_PASSWORD:-stock_picker_dev_password}@postgres:5432/stock_picker
+      REDIS_URL: redis://redis:6379/0
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD in your local environment}
+      SESSION_SECRET_KEY: ${SESSION_SECRET_KEY:?set SESSION_SECRET_KEY in your local environment}
+      CSRF_SECRET_KEY: ${CSRF_SECRET_KEY:?set CSRF_SECRET_KEY in your local environment}
+      FMP_API_KEY: ${FMP_API_KEY:-}
+      ALPHA_VANTAGE_API_KEY: ${ALPHA_VANTAGE_API_KEY:-}
+      FINNHUB_API_KEY: ${FINNHUB_API_KEY:-}
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
+    depends_on:
+      - backend
+      - redis
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
+volumes:
+  postgres-data:

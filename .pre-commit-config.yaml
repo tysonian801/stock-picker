@@ -1,0 +1,8 @@
+repos:
+  - repo: local
+    hooks:
+      - id: gitleaks
+        name: gitleaks
+        entry: bash -c 'git ls-files --cached --others --exclude-standard -z | xargs -0 -n1 gitleaks dir --no-banner --redact --config .gitleaks.toml'
+        language: system
+        pass_filenames: false
